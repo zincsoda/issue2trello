@@ -7,5 +7,4 @@ Very simple script for converting github issue on an orgnanization/repo into a t
 setup.py needs to exist with the correct values as represented in setup_empty.py
 
 Usage:
-
-  ./issue2trello <issue_number>
+```./issue2trello <issue_number>```
