@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
 import sys
-sys.path.append('/usr/local/lib/python2.7/site-packages')
+import getpass
 import trello
 import github
-
+# locally
 import setup
 
 
@@ -18,7 +18,7 @@ def get_issue_title_and_url(issue_number):
     get issue url
     '''
 
-    pw = raw_input('Enter your github password: ')
+    pw = getpass.getpass(prompt='Enter your github password:')
     g = github.Github(setup.user, pw)
 
     print 'Getting issue details from github ...'
@@ -32,7 +32,7 @@ def get_token_url():
     conn = trello.TrelloApi(setup.app_key)
     print conn.get_token_url('Issue2Trello', expires='30days', write_access=True)
 
-def add_issue_to_trello(issue_title, issue_url):
+def add_issue_to_trello(issue_number, issue_title, issue_url):
     '''
     connect to trello
     set token
@@ -44,12 +44,14 @@ def add_issue_to_trello(issue_title, issue_url):
     print 'Creating new card for issue on Trello ...'
     conn = trello.TrelloApi(setup.app_key)
     conn.set_token(setup.token)
-    new_card_id = conn.lists.new_card(setup.list_id, issue_title)['id']
+    card_title = 'Issue %d: %s' % (issue_number, issue_title)
+    new_card_id = conn.lists.new_card(setup.list_id, card_title)['id']
     conn.cards.update_desc(new_card_id, issue_url)
+    conn.cards.new_label(new_card_id, 'red')
 
 def main(issue_number):
     issue_title, issue_url = get_issue_title_and_url(issue_number)
-    add_issue_to_trello(issue_title, issue_url)
+    add_issue_to_trello(issue_number, issue_title, issue_url)
 
 if __name__=="__main__":
 
